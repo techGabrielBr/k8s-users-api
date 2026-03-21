@@ -325,26 +325,6 @@ Este projeto foi criado para estudo de:
 
 Ele demonstra como uma **API .NET pode ser containerizada e executada em um cluster Kubernetes utilizando manifests declarativos**.
 
----
-
-# Melhorias Futuras
-
-Possíveis melhorias para evolução do projeto:
-
-* CI/CD com GitHub Actions
-* publicação automática da imagem Docker
-* Ingress para exposição HTTP externa
-* Horizontal Pod Autoscaler
-* liveness e readiness probes
-* resource limits para containers
-* Helm Chart para gerenciamento de deploy
-
----
-
-# Autor
-
-Gabriel
-
 GitHub
 
 https://github.com/techGabrielBr
