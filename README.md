@@ -110,7 +110,7 @@ dotnet run --project src/UsersAPI
 A API ficará disponível em:
 
 ```
-http://localhost:5000
+http://localhost:5041
 ```
 
 ---
@@ -297,13 +297,13 @@ Sem Service, cada pod teria um IP diferente e instável.
 Exemplo de requisição:
 
 ```bash
-curl http://localhost:5000/
+curl http://localhost:5041/
 ```
 
 Criar usuário:
 
 ```bash
-curl -X POST http://localhost:5000/auth/register \
+curl -X POST http://localhost:5041/auth/register \
 -H "Content-Type: application/json" \
 -d '{
   "name": "Gabriel",
