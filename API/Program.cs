@@ -1,5 +1,9 @@
-using MassTransit;
+using Amazon.SQS;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Prometheus;
+using UsersAPI.Domain.Entities;
+using UsersAPI.Events.Publishers;
 using UsersAPI.Extensions;
 using UsersAPI.Infrastructure.Data;
 using UsersAPI.Infrastructure.Repositories;
@@ -42,30 +46,26 @@ builder.Services.AddScoped<JwtTokenGenerator>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 // ======================
-// MassTransit Config
+// SQS Config
 // ======================
-builder.Services.AddMassTransit(x =>
-{
-    var host = Environment.GetEnvironmentVariable("RABBITMQ_HOST");
-    var username = Environment.GetEnvironmentVariable("RABBITMQ_USERNAME");
-    var password = Environment.GetEnvironmentVariable("RABBITMQ_PASSWORD");
 
-    if (host == null || username == null || password == null)
-    {
-        throw new Exception("RabbitMQ configuration is missing. Please set environment variables");
-    }
-    else
-    {
-        x.UsingRabbitMq((context, cfg) =>
+var AWS_SERVICE_URL = Environment.GetEnvironmentVariable("AWS_SERVICE_URL");
+var AWS_USER = Environment.GetEnvironmentVariable("AWS_USER");
+var AWS_PASSWORD = Environment.GetEnvironmentVariable("AWS_PASSWORD");
+
+builder.Services.AddSingleton<IAmazonSQS>(_ =>
+{
+    return new AmazonSQSClient(
+        AWS_USER,
+        AWS_PASSWORD,
+        new AmazonSQSConfig
         {
-            cfg.Host(host, "/", h =>
-            {
-                h.Username(username);
-                h.Password(password);
-            });
-        });
-    }
+            ServiceURL = AWS_SERVICE_URL
+        }
+    );
 });
+
+builder.Services.AddSingleton<SqsEventPublisher>();
 
 // ======================
 var app = builder.Build();
@@ -89,5 +89,8 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseHttpMetrics();
+
 app.MapControllers();
+app.MapMetrics();
 app.Run();

@@ -1,10 +1,10 @@
 ﻿using Events.Models;
-using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using UsersAPI.API.Controllers.Models;
 using UsersAPI.Domain.Entities;
+using UsersAPI.Events.Publishers;
 using UsersAPI.Infrastructure.Repositories;
 using UsersAPI.Infrastructure.Security;
 using UsersAPI.Infrastructure.Validators;
@@ -16,11 +16,11 @@ namespace UsersAPI.API.Controllers
     public class AuthController(
         IUserRepository userRepository,
         JwtTokenGenerator jwtService,
-        IPublishEndpoint publishEndpoint) : ControllerBase
+        SqsEventPublisher eventPublisher) : ControllerBase
     {
         private readonly IUserRepository _userRepository = userRepository;
         private readonly JwtTokenGenerator _jwtService = jwtService;
-        private readonly IPublishEndpoint _publishEndpoint = publishEndpoint;
+        private readonly SqsEventPublisher _eventPublisher = eventPublisher;
 
         [AllowAnonymous]
         [HttpPost("register")]
@@ -41,7 +41,8 @@ namespace UsersAPI.API.Controllers
             var user = new User(
                 request.Name,
                 request.Email,
-                string.Empty
+                string.Empty,
+                "User"
             );
 
             var hasher = new PasswordHasher<User>();
@@ -51,18 +52,22 @@ namespace UsersAPI.API.Controllers
 
             await _userRepository.AddAsync(user);
 
-            await _publishEndpoint.Publish(new UserCreatedEvent
-            {
-                Id = user.Id,
-                Email = user.Email,
-                CreatedAt = DateTime.UtcNow
-            });
+            await _eventPublisher.PublishAsync(
+                 "user-created-event",
+                 new UserCreatedEvent
+                 {
+                     Id = user.Id,
+                     Email = user.Email,
+                     CreatedAt = DateTime.UtcNow
+                 }
+            );
 
             return Created("", new
             {
                 user.Id,
                 user.Name,
-                user.Email
+                user.Email,
+                user.Role
             });
         }
 

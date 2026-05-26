@@ -7,7 +7,8 @@
         public User(
                 string name,
                 string email,
-                string passwordHash
+                string passwordHash,
+                string role
             )
         {
             Id = Guid.NewGuid();
@@ -15,6 +16,7 @@
             Email = email;
             PasswordHash = passwordHash;
             CreatedAt = DateTime.UtcNow;
+            Role = role;
         }
 
         public Guid Id { get; private set; }
@@ -22,6 +24,7 @@
         public string Email { get; private set; } = null!;
         public string PasswordHash { get; private set; } = null!;
         public DateTime CreatedAt { get; private set; }
+        public string Role { get; set; } = "User";
 
         public void SetPassword(string hash)
         {

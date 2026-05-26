@@ -3,6 +3,7 @@ kind: ConfigMap
 metadata:
   name: users-api-config
 data:
-  RABBITMQ_HOST: "rabbitmq"
+  AWS_SERVICE_URL: "http://host.docker.internal:4566"
+  QUEUE_SQS_BASE_URL: "http://host.docker.internal:4566/000000000000/"
   ASPNETCORE_URLS: "http://+:8081"
-  ASPNETCORE_ENVIRONMENT: "Development"
+  ASPNETCORE_ENVIRONMENT: "Production"

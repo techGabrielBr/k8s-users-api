@@ -19,9 +19,11 @@ namespace UsersAPI.Infrastructure.Security
         {
             var claims = new[]
             {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email),
-        };
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new(ClaimTypes.Role, user.Role)
+            };
+
             var secret = Environment.GetEnvironmentVariable("JWT_SECRET") 
                 ?? throw new Exception("JWT configuration is missing. Please set environment variables");
             
