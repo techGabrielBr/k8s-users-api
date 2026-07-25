@@ -3,8 +3,6 @@ kind: Deployment
 metadata:
   name: users-api
 spec:
-  # 1 réplica: o SQLite em volume EBS (ReadWriteOnce) só suporta um escritor,
-  # e o EBS só conecta em um nó por vez
   replicas: 1
   strategy:
     type: Recreate
@@ -16,6 +14,8 @@ spec:
       labels:
         app: users-api
     spec:
+      securityContext:
+        fsGroup: 1654
       containers:
       - name: users-api
         image: <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/users-api:latest
