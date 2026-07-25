@@ -3,7 +3,11 @@ kind: Deployment
 metadata:
   name: users-api
 spec:
-  replicas: 2
+  # 1 réplica: o SQLite em volume EBS (ReadWriteOnce) só suporta um escritor,
+  # e o EBS só conecta em um nó por vez
+  replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: users-api
