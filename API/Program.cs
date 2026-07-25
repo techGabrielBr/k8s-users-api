@@ -49,20 +49,23 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 // SQS Config
 // ======================
 
-var AWS_SERVICE_URL = Environment.GetEnvironmentVariable("AWS_SERVICE_URL");
-var AWS_USER = Environment.GetEnvironmentVariable("AWS_USER");
-var AWS_PASSWORD = Environment.GetEnvironmentVariable("AWS_PASSWORD");
-
 builder.Services.AddSingleton<IAmazonSQS>(_ =>
 {
-    return new AmazonSQSClient(
-        AWS_USER,
-        AWS_PASSWORD,
-        new AmazonSQSConfig
-        {
-            ServiceURL = AWS_SERVICE_URL
-        }
-    );
+    var AWS_SERVICE_URL = Environment.GetEnvironmentVariable("AWS_SERVICE_URL");
+
+    if (AWS_SERVICE_URL != null)
+    {
+        return new AmazonSQSClient(
+            Environment.GetEnvironmentVariable("AWS_USER") ?? "teste",
+            Environment.GetEnvironmentVariable("AWS_PASSWORD") ?? "teste",
+            new AmazonSQSConfig
+            {
+                ServiceURL = AWS_SERVICE_URL
+            }
+        );
+    }
+
+    return new AmazonSQSClient();
 });
 
 builder.Services.AddSingleton<SqsEventPublisher>();

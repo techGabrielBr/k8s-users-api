@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: users-api
-        image: techgabriel/users-api:latest
+        image: <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/users-api:latest
         ports:
           - containerPort: 8081
         envFrom:
